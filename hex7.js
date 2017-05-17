@@ -6,24 +6,32 @@
 
 function makeBoard(n)  {
   var board = [];
-  var leader = `╱  `;
-  var ender = `╲`;
-  var hex_base = `╲▁▁╱  `;
+  var hex_base_top = `▁▁╱  ╲`;
+  var hex_base_bottom = `╲▁▁╱  `;
+  var top_rows = n+1;
 
-  for (var i = 0; i < n; i++) {
-    board[i] = repeatString(" ", 3*(n-i-1));
-    board[i] += leader;
-    board[i] += repeatString(hex_base, i);
-    board[i] += ender;
+  // Build the top half of the board.
+  for (var i = 0; i < top_rows; i++) {
+    board[i] = repeatString(" ", 3*(top_rows-i-1));
+    board[i] += repeatString(hex_base_top, i);
+    board[i] += `▁▁`;
   }
-  return board;
+
+  // Build the bottom half of the board.
+  for (var i = 0; i < n; i++) {
+    board[top_rows+i] = repeatString(" ", 3*(i)+2);
+    board[top_rows+i] += repeatString(hex_base_bottom, n-i);
+  }
+
+  // Clean up the left and right edges of the board.
+  board[n] = board[n].slice(0, -2);
+  board[n+1] = board[n+1].slice(0, -2);
+  return board.map(row => { return row.slice(2) });
 }
 
 function repeatString(str, n) {
-  if (n > 0) {
-    return str + repeatString(str, n-1);
-  }
-  return "";
+  return Array(n).fill().reduce(acc => {
+    return acc + str;
+  }, "");
 }
-
-console.log(makeBoard(7));
+console.log(makeBoard(10));
