@@ -1,3 +1,4 @@
+"use strict";
 var blessed = require('blessed');
 
 var screen = blessed.screen({
@@ -18,6 +19,37 @@ var board = blessed.box({
 	},
 });
 screen.append(board);
+
+for (let i = -3; i <= 3; i++) {
+  for (let j = -3; j <= 3; j++) {
+    let c = squish(rotate(i, j, Math.PI/4));
+    let cell = blessed.box({
+      top: Math.round(c.x) + 20,
+      left: Math.round(c.y) + 20,
+      height: 2,
+      width: 2,
+      content: "XX\nXX",
+    });
+
+    screen.append(cell);
+  }
+}
+
+function rotate(x, y) {
+  return {
+    x: x-y,
+    y: x+y
+  }
+}
+
+// function expand
+function squish(c) {
+  return {
+    x: c.x,
+    y: c.y*3
+  }
+}
+
 screen.render();
 
 function heightOfBoard(n) { return 2*n + 4; }
