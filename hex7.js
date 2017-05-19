@@ -10,8 +10,8 @@ var n = 7;
 var board = blessed.box({
   top: 'center',
   left: 'center',
-  width: widthOfBoard(n),
-  height: heightOfBoard(n),
+  width: 'shrink',
+  height: 'shrink',
   content: makeBoard(n),
 	tags: true,
 	border: {
@@ -22,16 +22,23 @@ screen.append(board);
 
 for (let i = -3; i <= 3; i++) {
   for (let j = -3; j <= 3; j++) {
-    let c = squish(rotate(i, j, Math.PI/4));
+    let c = mapToBoard(rotate(i, j));
     let cell = blessed.box({
-      top: Math.round(c.x) + 20,
-      left: Math.round(c.y) + 20,
+      top: stringifyPosition(50, c.x),
+      left: stringifyPosition(50, c.y),
       height: 2,
       width: 2,
-      content: "XX\nXX",
+      content: `\n▁▁`,
+      tags: true,
+      parent: board,
+    });
+    screen.append(cell);
+
+    cell.on('click', m => {
+      cell.setContent('▄▄\n▁▁');
+      screen.render();
     });
 
-    screen.append(cell);
   }
 }
 
@@ -42,18 +49,28 @@ function rotate(x, y) {
   }
 }
 
-// function expand
-function squish(c) {
+function mapToBoard(c) {
   return {
-    x: c.x,
-    y: c.y*3
+    x: c.x -1,
+    y: c.y*3 -1
+  }
+}
+
+function stringifyPosition(percent, offset) {
+  if (offset >= 0) {
+    return percent + '%+' + offset;
+  } else {
+    return percent + '%-' + Math.abs(offset);
   }
 }
 
 screen.render();
 
-function heightOfBoard(n) { return 2*n + 4; }
-function widthOfBoard(n) { return 6*n; }
+// Quit on Escape, q, or Control-C.
+screen.key(['escape', 'q', 'C-c'], function(ch, key) {
+  return process.exit(0);
+});
+
 
 function makeBoard(n)  {
   var board = [];
