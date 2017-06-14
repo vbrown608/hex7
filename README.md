@@ -2,5 +2,6 @@
 
 To run:
 
-* Install node.js
+* Install node.js and npm
+* `npm install`
 * `node hex7.js`
